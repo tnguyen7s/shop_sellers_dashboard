@@ -14,9 +14,10 @@ import java.sql.SQLException;
  */
 public class DatabaseContext {
     private Connection conn = null;
-    public DatabaseContext(String connectionString) throws SQLException
+    public DatabaseContext(String connectionString) throws SQLException, ClassNotFoundException
     {
-        conn = DriverManager.getConnection(connectionString);
+        Class.forName("com.mysql.jdbc.Driver");
+        conn = DriverManager.getConnection(connectionString, "root", "");
     }
     
     public Connection getConnection()

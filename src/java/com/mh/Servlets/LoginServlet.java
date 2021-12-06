@@ -4,13 +4,21 @@
  */
 package com.mh.Servlets;
 
+import com.mh.Dao.DatabaseContext;
+import com.mh.Entities.Owner;
+import com.mh.Services.OwnerService;
 import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -77,7 +85,46 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        ServletContext context = request.getServletContext();
+        Object dbObject = context.getAttribute("DatabaseContext");
+        
+        RequestDispatcher requestDispatcher = null;   
+        // If unable to get the database context, return an error page
+        if (dbObject==null)
+        {
+            request.setAttribute("error", "DatabaseContext is null: "+request.getServletContext().getAttribute("error"));
+            requestDispatcher = request.getRequestDispatcher("error.jsp");
+            requestDispatcher.forward(request, response);
+            return;
+        }
+
+        DatabaseContext db = (DatabaseContext)dbObject;
+        
+        // Create OwnerService object
+        OwnerService service = new OwnerService(db);
+        
+        Owner owner = null;
+        try {
+            // if the seller is valid, setCookie with userId and direct user to home page; otherwise, return login page with a meassage
+            if ((owner=service.identifyAndVerifyOwner(request.getParameter("phone"), request.getParameter("pwd")))!=null)
+            {
+                response.addCookie(new Cookie("ownerId", Integer.toString(owner.getOwnerId())));
+                requestDispatcher = request.getRequestDispatcher("ProductServlet.java");
+                requestDispatcher.forward(request, response);
+            }
+            else
+            {
+                request.setAttribute("invalidLogin", "true");
+                requestDispatcher = request.getRequestDispatcher("login.jsp");
+                requestDispatcher.forward(request, response);
+            }
+        } 
+        catch (SQLException ex) {
+            request.setAttribute("error", "SQL exception: " + ex.getMessage());
+            requestDispatcher = request.getRequestDispatcher("error.jsp");
+            requestDispatcher.forward(request, response);
+            return;
+        }
     }
 
     /**

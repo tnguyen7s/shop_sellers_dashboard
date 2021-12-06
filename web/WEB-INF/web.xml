@@ -12,7 +12,7 @@
     </session-config>
     <context-param>
         <param-name>DbConnectionString</param-name>
-        <param-value>jdbc:mysql://localhost/shoppingappdb</param-value>
+        <param-value>jdbc:mysql://localhost:3308/shoppingappdb</param-value>
     </context-param>
     
     <listener>

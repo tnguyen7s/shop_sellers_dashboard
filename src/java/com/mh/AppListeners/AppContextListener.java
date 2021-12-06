@@ -30,11 +30,15 @@ public class AppContextListener implements ServletContextListener {
        DatabaseContext db = null;
        try 
        {
-           db = new DatabaseContext(connectionString);
+           try {
+               db = new DatabaseContext(connectionString);
+           } catch (ClassNotFoundException ex) {
+               Logger.getLogger(AppContextListener.class.getName()).log(Level.SEVERE, null, ex);
+           }
        } 
        catch (SQLException ex) {
             Logger.getLogger(AppContextListener.class.getName()).log(Level.SEVERE, null, ex);
-            context.setAttribute("error", ex.getMessage());
+            context.setAttribute("error", ex.getMessage() + "\nCause: " + ex.getCause());
        }
         
         context.setAttribute("DatabaseContext", db);
@@ -43,8 +47,13 @@ public class AppContextListener implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         try {
-            ((DatabaseContext)sce.getServletContext().getAttribute("DatabaseContext")).closeConnection();
-        } catch (SQLException ex) {
+            Object db = sce.getServletContext().getAttribute("DatabaseContext");
+            if (db!=null)
+            {
+                ((DatabaseContext)db).closeConnection();
+            }
+        } catch (SQLException ex) 
+        {
             Logger.getLogger(AppContextListener.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

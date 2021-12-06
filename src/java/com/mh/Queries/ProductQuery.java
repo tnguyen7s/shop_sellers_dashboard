@@ -17,9 +17,9 @@ import java.util.List;
  *
  * @author Tuyen
  */
-public class ProductQueries {
+public class ProductQuery {
     private Connection conn;
-    public ProductQueries(DatabaseContext db)
+    public ProductQuery(DatabaseContext db)
     {
         this.conn = db.getConnection();
     }

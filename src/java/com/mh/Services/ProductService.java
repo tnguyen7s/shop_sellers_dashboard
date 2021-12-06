@@ -6,7 +6,7 @@ package com.mh.Services;
 
 import com.mh.Dao.DatabaseContext;
 import com.mh.Entities.Product;
-import com.mh.Queries.ProductQueries;
+import com.mh.Queries.ProductQuery;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -15,10 +15,10 @@ import java.util.List;
  * @author Tuyen
  */
 public class ProductService {
-    private ProductQueries query;
+    private ProductQuery query;
     public ProductService(DatabaseContext db)
     {
-        query = new ProductQueries(db);
+        query = new ProductQuery(db);
     }
     
     public List<Product> getAllProductsOfSeller(int sellerId) throws SQLException

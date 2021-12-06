@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+    <display-name>Seller Dashboard</display-name>
+    <listener>
+        <description>ServletContextListener</description>
+        <listener-class>com.mh.AppListeners.AppContextListener</listener-class>
+    </listener>
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+    <context-param>
+        <param-name>DbConnectionString</param-name>
+        <param-value>jdbc:mysql://localhost/shoppingappdb</param-value>
+    </context-param>
+    
+    <listener>
+        <listener-class>com.mh.AppListeners.AppContextListener</listener-class>
+    </listener>
+</web-app>

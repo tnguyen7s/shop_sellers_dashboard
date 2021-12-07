@@ -25,4 +25,14 @@ public class ProductService {
     {
         return this.query.getAllProductsOfSeller(sellerId);
     }
+    
+    public void insertProduct(Product product) throws SQLException
+    {
+        this.query.insertProduct(product);
+    }
+    
+    public void updateProduct(Product product) throws SQLException
+    {
+        this.query.updateProduct(product);
+    }
 }

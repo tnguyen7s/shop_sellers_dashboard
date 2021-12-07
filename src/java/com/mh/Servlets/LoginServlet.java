@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import static java.lang.System.out;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,24 +39,6 @@ public class LoginServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        
-        //Get the database context from the app context
-        Object dbObj = request.getServletContext().getAttribute("DatabaseContext");
-        RequestDispatcher requestDispatcher = null;
-        
-        // If unable to get the database context, return an error page
-        if (dbObj==null)
-        {
-            request.setAttribute("error", "DatabaseContext is null: "+request.getServletContext().getAttribute("error"));
-            requestDispatcher = request.getRequestDispatcher("error.jsp");
-            requestDispatcher.forward(request, response);
-            return;
-        }
-        
-        // otherwise, display the login page
-        requestDispatcher = request.getRequestDispatcher("login.jsp");
-        requestDispatcher.forward(request, response);
         
     }
 
@@ -71,7 +54,57 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+         response.setContentType("text/html;charset=UTF-8");
+        
+        //Get the database context from the app context
+        Object dbObj = request.getServletContext().getAttribute("DatabaseContext");
+        RequestDispatcher requestDispatcher = null;
+        
+        // If unable to get the database context, return an error page
+        if (dbObj==null)
+        {
+            request.setAttribute("error", "DatabaseContext is null: "+request.getServletContext().getAttribute("error"));
+            requestDispatcher = request.getRequestDispatcher("error.jsp");
+            requestDispatcher.forward(request, response);
+            return;
+        }
+        
+        DatabaseContext db= (DatabaseContext)dbObj;
+        
+        // Create OwnerService object
+        OwnerService service = new OwnerService(db);
+        
+        Owner owner = null;
+        if (request.getParameter("phone")!=null)
+        {
+            try {
+                // if the seller is valid, setCookie with userId and direct user to home page; otherwise, return login page with a meassage
+                if ((owner=service.identifyAndVerifyOwner(request.getParameter("phone"), request.getParameter("pwd")))!=null)
+                {
+                    response.addCookie(new Cookie("ownerId", Integer.toString(owner.getOwnerId())));
+                    requestDispatcher = request.getRequestDispatcher("/products");
+                    requestDispatcher.forward(request, response);
+                }
+                else
+                {
+                    request.setAttribute("invalidLogin", "true");
+                    requestDispatcher = request.getRequestDispatcher("login.jsp");
+                    requestDispatcher.forward(request, response);
+                }
+            } 
+            catch (SQLException ex) {
+                request.setAttribute("error", "SQL exception: " + ex.getMessage());
+                requestDispatcher = request.getRequestDispatcher("error.jsp");
+                requestDispatcher.forward(request, response);
+                return;
+            }
+        }
+        else
+        {
+            // otherwise, display the login page
+            requestDispatcher = request.getRequestDispatcher("login.jsp");
+            requestDispatcher.forward(request, response);
+        }
     }
 
     /**
@@ -85,46 +118,6 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        ServletContext context = request.getServletContext();
-        Object dbObject = context.getAttribute("DatabaseContext");
-        
-        RequestDispatcher requestDispatcher = null;   
-        // If unable to get the database context, return an error page
-        if (dbObject==null)
-        {
-            request.setAttribute("error", "DatabaseContext is null: "+request.getServletContext().getAttribute("error"));
-            requestDispatcher = request.getRequestDispatcher("error.jsp");
-            requestDispatcher.forward(request, response);
-            return;
-        }
-
-        DatabaseContext db = (DatabaseContext)dbObject;
-        
-        // Create OwnerService object
-        OwnerService service = new OwnerService(db);
-        
-        Owner owner = null;
-        try {
-            // if the seller is valid, setCookie with userId and direct user to home page; otherwise, return login page with a meassage
-            if ((owner=service.identifyAndVerifyOwner(request.getParameter("phone"), request.getParameter("pwd")))!=null)
-            {
-                response.addCookie(new Cookie("ownerId", Integer.toString(owner.getOwnerId())));
-                requestDispatcher = request.getRequestDispatcher("ProductServlet.java");
-                requestDispatcher.forward(request, response);
-            }
-            else
-            {
-                request.setAttribute("invalidLogin", "true");
-                requestDispatcher = request.getRequestDispatcher("login.jsp");
-                requestDispatcher.forward(request, response);
-            }
-        } 
-        catch (SQLException ex) {
-            request.setAttribute("error", "SQL exception: " + ex.getMessage());
-            requestDispatcher = request.getRequestDispatcher("error.jsp");
-            requestDispatcher.forward(request, response);
-            return;
-        }
     }
 
     /**

@@ -21,6 +21,7 @@ public class Product {
     private double ratingAverage;
     private String productImage;
     private int ownerId;
+    private String usedBestBy;
     
     public Product(
     int productId,
@@ -32,6 +33,7 @@ public class Product {
     String category, 
     String brand,
     String productDetails,
+    String usedBestBy,
     double ratingAverage,
     String productImage,
     int ownerId)
@@ -48,6 +50,7 @@ public class Product {
         this.ratingAverage = ratingAverage;
         this.productImage = productImage;
         this.ownerId = ownerId;
+        this.usedBestBy = usedBestBy;
     }
     
     public int getProductId()               
@@ -99,5 +102,8 @@ public class Product {
             return this.ownerId;
     } 
 
-    
+    public String getUsedBestBy()                 
+    { 
+            return this.usedBestBy;
+    }
 }

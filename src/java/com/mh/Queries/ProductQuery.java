@@ -53,9 +53,10 @@ public class ProductQuery {
                                         result.getString(7),
                                         result.getString(8), 
                                         result.getString(9),  
-                                        result.getDouble(10), 
-                                        result.getString(11),  
-                                        result.getInt(12))
+                                        result.getString(10), 
+                                        result.getDouble(11),  
+                                        result.getString(12),
+                                        result.getInt(13))
                 );
             }
 
@@ -77,4 +78,82 @@ public class ProductQuery {
         }
         return products;
     }
+    
+    public void insertProduct(Product product) throws SQLException
+    {
+        // Create query
+        String query = "INSERT INTO ('ProductName', 'InStockQuantity', 'SoldQuantity', 'PurchasedPrice', 'RetailPrice', 'Category', 'Brand', 'ProductDetails', 'UsedBestBy', 'RatingAverage', 'ProductImage', 'OwnerId')  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        
+        // Execute query
+        PreparedStatement stmt = null;
+        
+        try{
+            stmt = conn.prepareStatement(query);
+            stmt.setString(1, product.getProductName());
+            stmt.setInt(2, product.getInstockQuantity());
+            stmt.setInt(3, product.getSoldQuantity());
+            stmt.setDouble(4, product.getPurchasedPrice());
+            stmt.setDouble(5, product.getRetailPrice());
+            stmt.setString(6, product.getCategory());
+            stmt.setString(7, product.getBrand());
+            stmt.setString(8, product.getProductDetails());
+            stmt.setString(9, product.getUsedBestBy());
+            stmt.setDouble(10, product.getRatingAverage());
+            stmt.setString(11, product.getProductImage());
+            stmt.setInt(12, product.getOwnerId());
+            
+            stmt.executeUpdate();
+        }
+        catch(SQLException ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            if(stmt!=null)
+            {
+                stmt.close();
+            }
+        }
+    }
+    
+    public void updateProduct(Product product) throws SQLException
+    {
+        // Create query
+        String query = "UPDATE Products SET ProductName=?, InstockQuantity=?, SoldQuantity=?, PurchasedPrice=?, RetailPrice=?, Category=?, Brand=?, ProductDetails=?, UsedBestBy=?, RatingAverage=?, ProductImage=?, OwnerId=? WHERE ProductId=?;";
+        
+        // Execute query
+        PreparedStatement stmt = null;
+        
+        try{
+            stmt = conn.prepareStatement(query);
+            stmt.setString(1, product.getProductName());
+            stmt.setInt(2, product.getInstockQuantity());
+            stmt.setInt(3, product.getSoldQuantity());
+            stmt.setDouble(4, product.getPurchasedPrice());
+            stmt.setDouble(5, product.getRetailPrice());
+            stmt.setString(6, product.getCategory());
+            stmt.setString(7, product.getBrand());
+            stmt.setString(8, product.getProductDetails());
+            stmt.setString(9, product.getUsedBestBy());
+            stmt.setDouble(10, product.getRatingAverage());
+            stmt.setString(11, product.getProductImage());
+            stmt.setInt(12, product.getOwnerId());
+            stmt.setInt(13, product.getProductId());
+            
+            stmt.executeUpdate();
+        }
+        catch(SQLException ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            if(stmt!=null)
+            {
+                stmt.close();
+            }
+        }
+    }
+    
 }

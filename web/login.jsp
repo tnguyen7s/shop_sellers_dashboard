@@ -13,7 +13,7 @@
     </head>
     <body style="border: solid 1px gray; margin: 50px auto; width: 20%; padding: 20px;">
         <h1>Seller sign-in</h1>
-        <form action="LoginServlet.java" method="POST" style="padding: 20px">
+        <form action="LoginServlet.java" method="GET" style="padding: 20px">
             <label for="phone" style="margin-bottom:10px;">Mobile phone number</label><br>
             <input name="phone" type="text" style="margin-bottom:10px;"><br>
 
